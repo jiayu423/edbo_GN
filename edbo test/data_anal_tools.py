@@ -128,4 +128,25 @@ def populate_design_space(arr_list, name_list):
 
 	return design_dict
 
+def minmax(x): 
+    return (x - min(x)) / (max(x) - min(x))
+
+def standardize_domain(domain, VARIABLES): 
+
+	d = domain.to_numpy()
+
+	for i in range(d.shape[-1]): 
+	    d[:, i] = minmax(d[:, i])
+
+	std_domain = {}
+	for i, (var, (_, _, _)) in enumerate(VARIABLES.items()):
+	    std_domain[var] = d[:, i]
+
+	std_domain = pd.DataFrame(std_domain)
+
+	return std_domain
+
+
+
+
 

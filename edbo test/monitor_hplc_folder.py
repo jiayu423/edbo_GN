@@ -37,7 +37,8 @@ class HPLC_watch:
 		self.observer.stop()
 		self.observer.join()
 
-		print('found steady state peak area, ending monitor')
+		# print('found steady state peak area, ending monitor')
+		print('found product peaks')
 
 		# reset global params
 		isWatch = True

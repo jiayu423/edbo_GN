@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from gpytorch.priors import GammaPrior
 from monitor_hplc_folder import HPLC_watch
-from data_anal_tools import appendResToEdbo, propose_exp, populate_design_space, extract_data_from_csv
+from data_anal_tools import appendResToEdbo, propose_exp, populate_design_space, extract_data_from_csv, standardize_domain
 
 largvs = len(sys.argv)
 
@@ -18,11 +18,11 @@ if largvs==1 or (largvs==2 and sys.argv[1][-3:]=='csv'):
 
     # define design space
     VARIABLES = {
-        # (<start>, <end>, <step>, [<values>])
-        'residence_time': (5, 30, 5),
-        'temperature': (30, 150, 10),
-        'dppa': (1, 3, 0.25),
-        'isoporopanol': (1, 3, 0.25)
+        # (<start>, <end>, <step>)
+        'temperature': (-10, 30, 2), # C
+        'dosing_duration': (0, 60, 5), # mins
+        'NaBH4': (0.1, 2, 0.1), # equiv  
+        'SM': (1, 10, 1) # mM
     }
 
     arr_list = []
@@ -36,6 +36,9 @@ if largvs==1 or (largvs==2 and sys.argv[1][-3:]=='csv'):
     # not standardized
     domain = pd.DataFrame(populate_design_space(arr_list, name_list))
 
+    #standardize
+    std_domain = standardize_domain(domain, VARIABLES)
+
     # bo params
     target 				 = 'yields' # give a name to the DataFrame column
     acquisition_function = 'EI'
@@ -45,8 +48,8 @@ if largvs==1 or (largvs==2 and sys.argv[1][-3:]=='csv'):
     noise_prior          = [GammaPrior(1.2, 1.1), 0.2]
 
     # folder info
-    dir_to_watch         = 'd:\Chemstation/4\Data/BMS'
-    files_to_watch       = ['REPORT03.CSV']
+    dir_to_watch         = '.'
+    files_to_watch       = ['']
 
     # exp info
     round_               = 0
@@ -76,8 +79,13 @@ else:
 # main experiment loop
 
 while True:
+    # proposed exp: standardized
+    bo.proposed_experiments.index.values
+    # to get the original exp conditions
+    domain.iloc[bo.proposed_experiments.index.values]
 
-    propose_exp(bo)
+    # propose_exp(bo)
+    # replace with lukes code to interact with kinova
 
     watch = HPLC_watch(watch_dir=dir_to_watch, file_type=files_to_watch)
     new_res = watch.run()
