@@ -49,14 +49,14 @@ if largvs==1 or (largvs==2 and sys.argv[1][-3:]=='csv'):
 
     # folder info
     dir_to_watch         = '.'
-    files_to_watch       = ['']
+    files_to_watch       = ['DAD1A.ch']
 
     # exp info
     round_               = 0
     total_exps           = 2
 
     # init bo
-    bo = edbo.bro.BO(results_path = results, 
+    bo = edbo.bro.BO(results_path=results, 
                      domain=domain, 
                      target=target, 
                      acquisition_function=acquisition_function,
@@ -79,16 +79,21 @@ else:
 # main experiment loop
 
 while True:
-    # proposed exp: standardized
-    bo.proposed_experiments.index.values
-    # to get the original exp conditions
-    domain.iloc[bo.proposed_experiments.index.values]
 
-    # propose_exp(bo)
-    # replace with lukes code to interact with kinova
+    # to get the original exp conditions
+    unstd_exp = (domain.iloc[bo.proposed_experiments.index.values]).to_numpy()[0]
+
+    # put into kinova's format
+    unstd_exp = [[unstd_exp[i]] for i in range(len(unstd_exp))]
+
+    # # run kinova
+    # for i in range(batch_size): 
+    #     gn_exp = GoldNanoparticleExperiment(temperature=unstd_exp[0], dosing_duration=unstd_exp[1],
+    #                                           nabh4_equiv=unstd_exp[2], starting_material_conc=unstd_exp[3])
+    #     gn_exp.run()
 
     watch = HPLC_watch(watch_dir=dir_to_watch, file_type=files_to_watch)
-    new_res = watch.run()
+    new_res = (watch.run())[0]
     appendResToEdbo(bo, new_res)
 
     # save results
