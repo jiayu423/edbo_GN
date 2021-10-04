@@ -51,10 +51,6 @@ if largvs==1 or (largvs==2 and sys.argv[1][-3:]=='csv'):
     dir_to_watch         = '.'
     files_to_watch       = ['DAD1A.ch']
 
-    # exp info
-    round_               = 0
-    total_exps           = 2
-
     # init bo
     bo = edbo.bro.BO(results_path=results, 
                      domain=domain, 
@@ -78,7 +74,8 @@ else:
 
 # main experiment loop
 
-while True:
+rounds = 10
+for i in range(rounds):
 
     # to get the original exp conditions
     unstd_exp = (domain.iloc[bo.proposed_experiments.index.values]).to_numpy()[0]
